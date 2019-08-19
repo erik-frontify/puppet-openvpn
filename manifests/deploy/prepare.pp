@@ -10,5 +10,6 @@ class openvpn::deploy::prepare(
 ) {
 
   class { 'openvpn::deploy::install': }
+  ~> class { 'openvpn::deploy::service': }
 
 }
