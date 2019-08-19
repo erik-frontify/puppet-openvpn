@@ -16,6 +16,10 @@ define openvpn::deploy::client (
 
   include openvpn::deploy::prepare
 
+  File <<| tag == "${server}-${name}" |>>
+
+  Class['openvpn::deploy::install']
+  -> Openvpn::Deploy::Client[$name]
 
   if $manage_etc {
     file { [
@@ -34,36 +38,34 @@ define openvpn::deploy::client (
   }
 
 
-  if $openvpn::deploy::client::manage_service {
+  if $manage_service {
 
-    $service = "openvpn@${name}"
     if $facts['service_provider'] == 'systemd' {
+      $service = "openvpn@${name}"
       service { "$service":
         ensure   => running,
         enable   => true,
         provider => 'systemd',
-        require  => File["${etc_directory}/openvpn/${name}.conf"],
+        require  => File["{openvpn::deploy::prepare::etc_directory}/openvpn/${name}.conf"],
       }
     }
     elsif $openvpn::namespecific_rclink {
-    $service = "openvpn_${name}"
+      $service = "openvpn_${name}"
       file { "/usr/local/etc/rc.d/openvpn_${name}":
         ensure => link,
-        target => "${etc_directory}/rc.d/openvpn",
+        target => "${openvpn::deploy::prepare::etc_directory}/rc.d/openvpn",
       }
-
       file { "/etc/rc.conf.d/openvpn_${name}":
         owner   => root,
         group   => 0,
         mode    => '0644',
         content => template('openvpn/etc-rc.d-openvpn.erb'),
       }
-
       service { "$service":
         ensure  => running,
         enable  => true,
         require => [
-          File["${etc_directory}/openvpn/${name}.conf"],
+          File["${openvpn::deploy::prepare::etc_directory}/openvpn/${name}.conf"],
           File["/usr/local/etc/rc.d/openvpn_${name}"],
         ],
       }
@@ -78,18 +80,6 @@ define openvpn::deploy::client (
       }
     }
 
-    File <<| tag == "${server}-${name}" |>>
-    ~> Service["$service"]
-
-    Class['openvpn::deploy::install']
-    -> Openvpn::Deploy::Client[$name]
-    ~> Service["$service"]
-
-    } else {
-    File <<| tag == "${server}-${name}" |>>
-
-    Class['openvpn::deploy::install']
-    -> Openvpn::Deploy::Client[$name]
   }
 
 }
