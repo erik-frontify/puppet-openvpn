@@ -11,7 +11,7 @@
 define openvpn::deploy::client (
   String $server,
   Boolean $manage_etc = true,
-  Boolean $manage_service => true,
+  Boolean $manage_service = true,
 ) {
 
   include openvpn::deploy::prepare
