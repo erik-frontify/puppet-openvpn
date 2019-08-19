@@ -3,7 +3,7 @@
 #
 class openvpn::deploy::service {
 
-  service { 'openvpn':
+  service { 'openvpn*':
     ensure     => running,
     enable     => true,
     hasrestart => true,
