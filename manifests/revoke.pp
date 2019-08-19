@@ -32,14 +32,16 @@ define openvpn::revoke (
         cwd      => "${etc_directory}/openvpn/${server}/easy-rsa",
         creates  => "${etc_directory}/openvpn/${server}/easy-rsa/revoked/${name}",
         provider => 'shell',
+        refresh  => "renew crl.pem for ${name}",
       }
       # `easyrsa gen-crl` does not work, since it will create the crl.pem
       # to keys/crl.pem which is a symlinked to crl.pem in the servers etc
       # directory
       exec { "renew crl.pem for ${name}":
-        command  => ". ./vars && EASYRSA_REQ_CN='' EASYRSA_REQ_OU='' openssl ca -gencrl -out ../crl.pem -config ./openssl.cnf",
-        cwd      => "${openvpn::etc_directory}/openvpn/${server}/easy-rsa",
-        provider => 'shell',
+        command     => ". ./vars && EASYRSA_REQ_CN='' EASYRSA_REQ_OU='' openssl ca -gencrl -out ../crl.pem -config ./openssl.cnf",
+        cwd         => "${openvpn::etc_directory}/openvpn/${server}/easy-rsa",
+        provider    => 'shell',
+        refreshonly => true,
       }
     }
     '2.0': {
