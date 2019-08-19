@@ -16,10 +16,6 @@ define openvpn::deploy::client (
 
   include openvpn::deploy::prepare
 
-  Class['openvpn::deploy::install']
-  -> Openvpn::Deploy::Client[$name]
-  ~> Class['openvpn::deploy::service']
-
 
   if $manage_etc {
     file { [
@@ -37,7 +33,63 @@ define openvpn::deploy::client (
     }
   }
 
-  File <<| tag == "${server}-${name}" |>>
-  ~> Class['openvpn::deploy::service']
+
+  if $openvpn::deploy::client::manage_service {
+
+    $service = "openvpn@${name}"
+    if $facts['service_provider'] == 'systemd' {
+      service { "$service":
+        ensure   => running,
+        enable   => true,
+        provider => 'systemd',
+        require  => File["${etc_directory}/openvpn/${name}.conf"],
+      }
+    }
+    elsif $openvpn::namespecific_rclink {
+    $service = "openvpn_${name}"
+      file { "/usr/local/etc/rc.d/openvpn_${name}":
+        ensure => link,
+        target => "${etc_directory}/rc.d/openvpn",
+      }
+
+      file { "/etc/rc.conf.d/openvpn_${name}":
+        owner   => root,
+        group   => 0,
+        mode    => '0644',
+        content => template('openvpn/etc-rc.d-openvpn.erb'),
+      }
+
+      service { "$service":
+        ensure  => running,
+        enable  => true,
+        require => [
+          File["${etc_directory}/openvpn/${name}.conf"],
+          File["/usr/local/etc/rc.d/openvpn_${name}"],
+        ],
+      }
+    }
+    else {
+      $service = "openvpn"
+      service { "$service":
+        ensure     => running,
+        enable     => true,
+        hasrestart => true,
+        hasstatus  => true,
+      }
+    }
+
+    File <<| tag == "${server}-${name}" |>>
+    ~> Service["$service"]
+
+    Class['openvpn::deploy::install']
+    -> Openvpn::Deploy::Client[$name]
+    ~> Service["$service"]
+
+    } else {
+    File <<| tag == "${server}-${name}" |>>
+
+    Class['openvpn::deploy::install']
+    -> Openvpn::Deploy::Client[$name]
+  }
 
 }
