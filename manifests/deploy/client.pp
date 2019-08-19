@@ -37,7 +37,6 @@ define openvpn::deploy::client (
     }
   }
 
-
   if $manage_service {
 
     if $facts['service_provider'] == 'systemd' {
@@ -46,7 +45,7 @@ define openvpn::deploy::client (
         ensure   => running,
         enable   => true,
         provider => 'systemd',
-        require  => File["{openvpn::deploy::prepare::etc_directory}/openvpn/${name}.conf"],
+        require  => File["${openvpn::deploy::prepare::etc_directory}/openvpn/${name}.conf"],
       }
     }
     elsif $openvpn::namespecific_rclink {
