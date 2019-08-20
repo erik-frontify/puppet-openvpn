@@ -22,14 +22,14 @@ define openvpn::deploy::client (
   -> Openvpn::Deploy::Client[$name]
 
   if $manage_etc {
-    file { [
+    ensure_resources('file', { [
       "${openvpn::deploy::prepare::etc_directory}/openvpn",
       "${openvpn::deploy::prepare::etc_directory}/openvpn/keys",
       "${openvpn::deploy::prepare::etc_directory}/openvpn/keys/${name}",
     ]:
       ensure  => directory,
       require => Package['openvpn'];
-    }
+    })
   } else {
     file { "${openvpn::deploy::prepare::etc_directory}/openvpn/keys/${name}":
       ensure  => directory,
