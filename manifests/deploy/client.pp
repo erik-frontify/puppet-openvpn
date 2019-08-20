@@ -26,9 +26,10 @@ define openvpn::deploy::client (
       "${openvpn::deploy::prepare::etc_directory}/openvpn",
       "${openvpn::deploy::prepare::etc_directory}/openvpn/keys",
       "${openvpn::deploy::prepare::etc_directory}/openvpn/keys/${name}",
-    ]:
+    ] => {
       ensure  => directory,
-      require => Package['openvpn'];
+      require => Package['openvpn'],
+      }
     })
   } else {
     file { "${openvpn::deploy::prepare::etc_directory}/openvpn/keys/${name}":
