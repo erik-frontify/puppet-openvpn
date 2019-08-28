@@ -14,6 +14,7 @@ define openvpn::deploy::client (
   Boolean $manage_service = true,
 ) {
 
+  include openvpn
   include openvpn::deploy::prepare
 
   File <<| tag == "${server}-${name}" |>>
