@@ -155,17 +155,28 @@ define openvpn::ca (
       }
 
       # looks like changes with version easy-rsa-3.0.3-1.el7 need the revoked directy under easy-rsa/keys/revoked/certs_by_serial
-      file { "${etc_directory}/openvpn/${name}/easy-rsa/revoked/certs_by_serial":
+      file {
+      "${etc_directory}/openvpn/${name}/easy-rsa/revoked/certs_by_serial",
+      "${etc_directory}/openvpn/${name}/easy-rsa/revoked/private_by_serial",
+      "${etc_directory}/openvpn/${name}/easy-rsa/revoked/reqs_by_serial",
+      "${etc_directory}/openvpn/${name}/easy-rsa/renewed/certs_by_serial",
+      "${etc_directory}/openvpn/${name}/easy-rsa/renewed/private_by_serial",
+      "${etc_directory}/openvpn/${name}/easy-rsa/renewed/reqs_by_serial":
         ensure  => directory,
         mode    => '0750',
         recurse => true,
         require => File["${etc_directory}/openvpn/${name}/easy-rsa/revoked"],
       }
-      file { "${etc_directory}/openvpn/${name}/easy-rsa/keys/revoked":
+      file {
+      "${etc_directory}/openvpn/${name}/easy-rsa/keys/revoked":
         ensure  => link,
         target  => "${etc_directory}/openvpn/${name}/easy-rsa/revoked",
-        require => File["${etc_directory}/openvpn/${name}/easy-rsa/revoked"],
+      "${etc_directory}/openvpn/${name}/easy-rsa/keys/renewd":
+        ensure  => link,
+        target  => "${etc_directory}/openvpn/${name}/easy-rsa/renewed",
+        require => File["${etc_directory}/openvpn/${name}/easy-rsa/renewd/certs_by_serial"],
       }
+
       if $openvpn::link_openssl_cnf {
         File["${etc_directory}/openvpn/${name}/easy-rsa/openssl.cnf"] {
           ensure => link,
