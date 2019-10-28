@@ -174,7 +174,7 @@ define openvpn::ca (
       "${etc_directory}/openvpn/${name}/easy-rsa/keys/renewd":
         ensure  => link,
         target  => "${etc_directory}/openvpn/${name}/easy-rsa/renewed",
-        require => File["${etc_directory}/openvpn/${name}/easy-rsa/renewd/certs_by_serial"],
+        require => File["${etc_directory}/openvpn/${name}/easy-rsa/renewed/certs_by_serial"],
       }
 
       if $openvpn::link_openssl_cnf {
