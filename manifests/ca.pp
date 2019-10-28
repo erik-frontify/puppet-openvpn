@@ -154,6 +154,18 @@ define openvpn::ca (
         require => File["${etc_directory}/openvpn/${name}/easy-rsa"],
       }
 
+      # looks like changes with version easy-rsa-3.0.3-1.el7 need the revoked directy under easy-rsa/keys/revoked/certs_by_serial
+      file { "${etc_directory}/openvpn/${name}/easy-rsa/revoked/certs_by_serial":
+        ensure  => directory,
+        mode    => '0750',
+        recurse => true,
+        require => File["${etc_directory}/openvpn/${name}/easy-rsa/revoked"],
+      }
+      file { "${etc_directory}/openvpn/${name}/easy-rsa/keys/revoked":
+        ensure  => link,
+        target  => "${etc_directory}/openvpn/${name}/easy-rsa/revoked",
+        require => File["${etc_directory}/openvpn/${name}/easy-rsa/revoked"],
+      }
       if $openvpn::link_openssl_cnf {
         File["${etc_directory}/openvpn/${name}/easy-rsa/openssl.cnf"] {
           ensure => link,
