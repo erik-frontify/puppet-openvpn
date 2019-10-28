@@ -172,7 +172,7 @@ define openvpn::ca (
       "${etc_directory}/openvpn/${name}/easy-rsa/keys/revoked":
         ensure  => link,
         target  => "${etc_directory}/openvpn/${name}/easy-rsa/revoked";
-      "${etc_directory}/openvpn/${name}/easy-rsa/keys/renewd":
+      "${etc_directory}/openvpn/${name}/easy-rsa/keys/renewed":
         ensure  => link,
         target  => "${etc_directory}/openvpn/${name}/easy-rsa/renewed",
         require => File["${etc_directory}/openvpn/${name}/easy-rsa/renewed"],
