@@ -159,6 +159,7 @@ define openvpn::ca (
         "${etc_directory}/openvpn/${name}/easy-rsa/revoked/certs_by_serial",
         "${etc_directory}/openvpn/${name}/easy-rsa/revoked/private_by_serial",
         "${etc_directory}/openvpn/${name}/easy-rsa/revoked/reqs_by_serial",
+        "${etc_directory}/openvpn/${name}/easy-rsa/renewed",
         "${etc_directory}/openvpn/${name}/easy-rsa/renewed/certs_by_serial",
         "${etc_directory}/openvpn/${name}/easy-rsa/renewed/private_by_serial",
         "${etc_directory}/openvpn/${name}/easy-rsa/renewed/reqs_by_serial"]:
@@ -174,7 +175,7 @@ define openvpn::ca (
       "${etc_directory}/openvpn/${name}/easy-rsa/keys/renewd":
         ensure  => link,
         target  => "${etc_directory}/openvpn/${name}/easy-rsa/renewed",
-        require => File["${etc_directory}/openvpn/${name}/easy-rsa/renewed/certs_by_serial"],
+        require => File["${etc_directory}/openvpn/${name}/easy-rsa/renewed"],
       }
 
       if $openvpn::link_openssl_cnf {
